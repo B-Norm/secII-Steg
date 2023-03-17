@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { Button, Upload, Input, InputNumber, Form } from "antd";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
-import { bitsToBytes, toBinString } from "../bitManip/helper";
+import { bitsToBytes, saveByteArray, toBinString } from "../bitManip/helper";
 import axios from "axios";
 
 const UploadFile = (props) => {
@@ -25,10 +25,10 @@ const UploadFile = (props) => {
         const hiddenReader = new FileReader();
         hiddenReader.onload = () => {
           const hiddenData = new Uint8Array(hiddenReader.result);
-
           hiddenBits = toBinString(hiddenData);
           modifiedBits = toBinString(originalData);
-
+          setModifiedFile(hiddenBits.length);
+          saveByteArray(originalData, "original.mp4");
           // handle the replacing of the bits to the original array
           for (
             let i = S - 1, arrayIndexFinder = 0, j = 0;
@@ -58,8 +58,8 @@ const UploadFile = (props) => {
     }
 
     const stegFile = await handleSteganography(startingBit, period);
+    saveByteArray(stegFile, "steg.mp4");
 
-    // TODO: Send files to mongoDB
     const options = {
       method: "POST",
       headers: {
@@ -69,20 +69,21 @@ const UploadFile = (props) => {
       data: {
         stegName:
           values.plaintext.split("\\")[values.plaintext.split("\\").length - 1],
-        file: stegFile,
+        file: stegFile.toString(),
         mName:
           values.message.split("\\")[values.message.split("\\").length - 1],
         mSkip: startingBit,
         mPeriod: period,
+        mSize: modifiedFile,
       },
       url: url,
     };
-    console.log(options);
 
     const res = await axios(options)
       .then((response) => {
         if (response.status === 200) {
           console.log(response);
+          props.setUploadOpen(false);
         }
       })
       .catch((err) => {

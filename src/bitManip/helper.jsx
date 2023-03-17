@@ -40,16 +40,15 @@ export function saveByteArray(byteArray, fileName) {
 }
 
 export const showSteg = (file, size, start, period, name) => {
-  var modifiedFile = bitsToBytes(file);
+  var modifiedFile = toBinString(file);
   var message = [];
   for (
     let i = start - 1, arrayIndexFinder = 0, j = 0;
     j < size;
-    i += C[arrayIndexFinder % period.length], j++
+    i += period[arrayIndexFinder % period.length], j++
   ) {
     message[j] = modifiedFile[i];
   }
-
   var messageBytes = bitsToBytes(message);
   saveByteArray(messageBytes, name);
 };

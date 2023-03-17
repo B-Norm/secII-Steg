@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // using code from antd
 import { Button, Space, Layout, Modal, theme, Input } from "antd";
-import Login from "./login/Login.jsx";
-import Register from "./login/Register.jsx";
-import UploadFile from "./steg/UploadFile.jsx";
+import Login from "../login/Login.jsx";
+import Register from "../login/Register.jsx";
+import UploadFile from "../steg/UploadFile.jsx";
 import { useIsAuthenticated, useAuthUser, useSignOut } from "react-auth-kit";
+import Images from "./Images.jsx";
+import axios from "axios";
 
 const { Header, Content, Footer } = Layout;
+const API_KEY = import.meta.env.VITE_API_KEY;
 
 const App = () => {
   // states for login button
@@ -14,6 +17,7 @@ const App = () => {
   const [registerOpen, setRegisterOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("Login");
+  const [files, setFiles] = useState([]);
   const isAuthenticated = useIsAuthenticated();
   const auth = useAuthUser();
   const signOut = useSignOut();
@@ -39,7 +43,35 @@ const App = () => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  // TODO: show all files with a button to decode
+  const getFiles = async () => {
+    const url = "/api/getFiles";
+
+    const options = {
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+        api_key: API_KEY,
+      },
+      url: url,
+    };
+
+    const res = await axios(options)
+      .then((response) => {
+        if (response.status === 200) {
+          //console.log(response.data);
+          setFiles(response.data);
+        }
+      })
+      .catch((err) => {
+        alert("Trouble Loading");
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    getFiles();
+  }, []);
+
   return (
     <Layout
       style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}
@@ -82,21 +114,25 @@ const App = () => {
         className="site-layout"
         style={{
           padding: "50px 50px",
+          background: "#1f1f1f",
         }}
       >
         <div
           style={{
             padding: 24,
             minHeight: 380,
-            background: colorBgContainer,
+            background: "#696969",
           }}
         >
-          Content
+          <Images files={files} />
         </div>
       </Content>
       <Footer
         style={{
           textAlign: "center",
+          background: "#1f1f1f",
+          bottom: 0,
+          width: "100%",
         }}
       >
         Assignment 4 Created by Bradley Norman 1000902210
@@ -143,9 +179,7 @@ const App = () => {
       >
         <UploadFile
           loginOpen={loginOpen}
-          setLoginOpen={setLoginOpen}
-          registerOpen={registerOpen}
-          setRegisterOpen={setRegisterOpen}
+          setUploadOpen={setUploadOpen}
           modalTitle={modalTitle}
           setModalTitle={setModalTitle}
         />
