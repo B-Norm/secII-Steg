@@ -12,6 +12,7 @@ const UploadFile = (props) => {
   const [inputValue, setInputValue] = useState("");
   const [intList, setIntList] = useState([]);
   const useAuth = useAuthHeader();
+  // TODO: Fix bug where first upload after openning the upload model returns error
 
   // put message file into the bits of the
   // plaintext file and return modified plaintext
@@ -28,7 +29,7 @@ const UploadFile = (props) => {
           hiddenBits = toBinString(hiddenData);
           modifiedBits = toBinString(originalData);
           setModifiedFile(hiddenBits.length);
-          saveByteArray(originalData, "original.mp4");
+          //saveByteArray(originalData, "original.mp4");
           // handle the replacing of the bits to the original array
           for (
             let i = S - 1, arrayIndexFinder = 0, j = 0;
@@ -58,7 +59,7 @@ const UploadFile = (props) => {
     }
 
     const stegFile = await handleSteganography(startingBit, period);
-    saveByteArray(stegFile, "steg.mp4");
+    //saveByteArray(stegFile, "steg.mp4");
 
     const options = {
       method: "POST",

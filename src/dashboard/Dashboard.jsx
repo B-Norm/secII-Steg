@@ -58,12 +58,10 @@ const App = () => {
     const res = await axios(options)
       .then((response) => {
         if (response.status === 200) {
-          //console.log(response.data);
           setFiles(response.data);
         }
       })
       .catch((err) => {
-        alert("Trouble Loading");
         console.log(err);
       });
   };
