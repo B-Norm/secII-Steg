@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import { Button, Upload, Input, InputNumber, Form } from "antd";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
@@ -6,13 +6,12 @@ import { bitsToBytes, saveByteArray, toBinString } from "../bitManip/helper";
 import axios from "axios";
 
 const UploadFile = (props) => {
-  const [plaintext, setPlaintext] = useState([]);
-  const [message, setMessage] = useState([]);
-  const [modifiedFile, setModifiedFile] = useState(null);
+  const [plaintext, setPlaintext] = useState(null);
+  const [message, setMessage] = useState(null);
+  let mSize = 0;
   const [inputValue, setInputValue] = useState("");
   const [intList, setIntList] = useState([]);
   const useAuth = useAuthHeader();
-  // TODO: Fix bug where first upload after openning the upload model returns error
 
   // put message file into the bits of the
   // plaintext file and return modified plaintext
@@ -28,8 +27,7 @@ const UploadFile = (props) => {
           const hiddenData = new Uint8Array(hiddenReader.result);
           hiddenBits = toBinString(hiddenData);
           modifiedBits = toBinString(originalData);
-          setModifiedFile(hiddenBits.length);
-          //saveByteArray(originalData, "original.mp4");
+          mSize = hiddenBits.length;
           // handle the replacing of the bits to the original array
           for (
             let i = S - 1, arrayIndexFinder = 0, j = 0;
@@ -59,7 +57,6 @@ const UploadFile = (props) => {
     }
 
     const stegFile = await handleSteganography(startingBit, period);
-    //saveByteArray(stegFile, "steg.mp4");
 
     const options = {
       method: "POST",
@@ -68,14 +65,12 @@ const UploadFile = (props) => {
         authorization: useAuth(),
       },
       data: {
-        stegName:
-          values.plaintext.split("\\")[values.plaintext.split("\\").length - 1],
+        stegName: values.plaintext.file.name,
         file: stegFile.toString(),
-        mName:
-          values.message.split("\\")[values.message.split("\\").length - 1],
+        mName: values.message.file.name,
         mSkip: startingBit,
         mPeriod: period,
-        mSize: modifiedFile,
+        mSize: mSize,
       },
       url: url,
     };
@@ -85,6 +80,7 @@ const UploadFile = (props) => {
         if (response.status === 200) {
           console.log(response);
           props.setUploadOpen(false);
+          props.setReload(props.reload + 1);
         }
       })
       .catch((err) => {
@@ -123,13 +119,15 @@ const UploadFile = (props) => {
             },
           ]}
         >
-          <input
-            type="file"
-            name="File"
-            onChange={(e) => {
-              setPlaintext(e.target.files[0]);
+          <Upload
+            beforeUpload={(file) => {
+              console.log({ file });
+              return false;
             }}
-          />
+            onChange={(info) => setPlaintext(info.file)}
+          >
+            <button>Click to Upload</button>
+          </Upload>
         </Form.Item>
 
         <Form.Item
@@ -142,13 +140,15 @@ const UploadFile = (props) => {
             },
           ]}
         >
-          <input
-            type="file"
-            name="File"
-            onChange={(e) => {
-              setMessage(e.target.files[0]);
+          <Upload
+            beforeUpload={(file) => {
+              console.log({ file });
+              return false;
             }}
-          />
+            onChange={(info) => setMessage(info.file)}
+          >
+            <button>Click to Upload</button>
+          </Upload>
         </Form.Item>
 
         <Form.Item

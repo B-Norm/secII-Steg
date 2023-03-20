@@ -16,6 +16,7 @@ const App = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [reload, setReload] = useState(0);
   const [modalTitle, setModalTitle] = useState("Login");
   const [files, setFiles] = useState([]);
   const isAuthenticated = useIsAuthenticated();
@@ -68,7 +69,7 @@ const App = () => {
 
   useEffect(() => {
     getFiles();
-  }, []);
+  }, [reload]);
 
   return (
     <Layout
@@ -180,6 +181,8 @@ const App = () => {
           setUploadOpen={setUploadOpen}
           modalTitle={modalTitle}
           setModalTitle={setModalTitle}
+          setReload={setReload}
+          reload={reload}
         />
       </Modal>
     </Layout>
