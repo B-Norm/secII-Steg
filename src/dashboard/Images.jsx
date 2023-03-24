@@ -56,7 +56,7 @@ const Images = ({ files }) => {
       {" "}
       <Row gutter={[16, 16]}>
         {files?.map((file, i) => (
-          <Col key={i} span={24 / columnCount}>
+          <Col key={i} /* span={24 / columnCount} */>
             <Card
               key={i}
               style={{ width: 300, marginTop: 16 }}

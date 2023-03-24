@@ -32,6 +32,7 @@ const App = () => {
   const handleCancel = () => {
     setLoginOpen(false);
     setRegisterOpen(false);
+    setModalTitle("Login");
   };
   const handleCancelUpload = () => {
     setUploadOpen(false);
@@ -72,9 +73,7 @@ const App = () => {
   }, [reload]);
 
   return (
-    <Layout
-      style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}
-    >
+    <Layout style={{ top: 0, bottom: 0, left: 0, right: 0 }}>
       <Header
         style={{
           position: "sticky",
