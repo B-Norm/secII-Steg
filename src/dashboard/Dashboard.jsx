@@ -16,6 +16,7 @@ const App = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [reload, setReload] = useState(0);
   const [modalTitle, setModalTitle] = useState("Login");
   const [files, setFiles] = useState([]);
   const isAuthenticated = useIsAuthenticated();
@@ -31,6 +32,7 @@ const App = () => {
   const handleCancel = () => {
     setLoginOpen(false);
     setRegisterOpen(false);
+    setModalTitle("Login");
   };
   const handleCancelUpload = () => {
     setUploadOpen(false);
@@ -58,24 +60,20 @@ const App = () => {
     const res = await axios(options)
       .then((response) => {
         if (response.status === 200) {
-          //console.log(response.data);
           setFiles(response.data);
         }
       })
       .catch((err) => {
-        alert("Trouble Loading");
         console.log(err);
       });
   };
 
   useEffect(() => {
     getFiles();
-  }, []);
+  }, [reload]);
 
   return (
-    <Layout
-      style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}
-    >
+    <Layout style={{ top: 0, bottom: 0, left: 0, right: 0 }}>
       <Header
         style={{
           position: "sticky",
@@ -124,7 +122,7 @@ const App = () => {
             background: "#696969",
           }}
         >
-          <Images files={files} />
+          {files.length === 0 ? <p> Loading </p> : <Images files={files} />}
         </div>
       </Content>
       <Footer
@@ -182,6 +180,8 @@ const App = () => {
           setUploadOpen={setUploadOpen}
           modalTitle={modalTitle}
           setModalTitle={setModalTitle}
+          setReload={setReload}
+          reload={reload}
         />
       </Modal>
     </Layout>

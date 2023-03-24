@@ -52,3 +52,38 @@ export const showSteg = (file, size, start, period, name) => {
   var messageBytes = bitsToBytes(message);
   saveByteArray(messageBytes, name);
 };
+
+// Display Files to Dash
+export const FileDisplay = (fileName, fileString) => {
+  const nums = fileString.split(",").map((n) => parseInt(n, 10));
+  const byteStream = Uint8Array.from(nums);
+
+  const blob = new Blob([byteStream], {
+    type: "application/octet-stream",
+  });
+  const url = URL.createObjectURL(blob);
+
+  const fileType = fileName.split(".").pop();
+
+  if (fileType === "jpg" || fileType === "png" || fileType === "gif") {
+    // If the file is an image, display it using an img tag
+    return <img src={url} alt={fileName} />;
+  } else if (fileType === "mp4") {
+    // If the file is a video, display it using a video tag
+    return (
+      <video controls>
+        <source src={url} type="video/mp4" />
+      </video>
+    );
+  } else if (fileType === "mp3") {
+    return (
+      <audio controls>
+        <source src={url} type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+    );
+  } else {
+    // If the file type is not supported, display an error message
+    return <p>Unsupported file type: {fileType}</p>;
+  }
+};
