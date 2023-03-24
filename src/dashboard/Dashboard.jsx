@@ -122,7 +122,7 @@ const App = () => {
             background: "#696969",
           }}
         >
-          <Images files={files} />
+          {files.length === 0 ? <p> Loading </p> : <Images files={files} />}
         </div>
       </Content>
       <Footer
