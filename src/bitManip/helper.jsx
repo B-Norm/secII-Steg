@@ -7,7 +7,7 @@ export var toBinString = (bytes) => {
   return [..._str];
 };
 
-// converts a bit string into Bytes ChatGPT and me
+// converts a bit string into Bytes
 export const bitsToBytes = (bits) => {
   //const _bits = bits.split("").map((_bits) => parseInt(_bits, 10));
 
@@ -30,6 +30,7 @@ export const bitsToBytes = (bits) => {
   return bytes;
 };
 
+// downloads file
 export function saveByteArray(byteArray, fileName) {
   const blob = new Blob([byteArray], { type: "application/octet-stream" });
   const url = URL.createObjectURL(blob);
@@ -45,7 +46,7 @@ export const showSteg = (file, size, start, period, name) => {
   for (
     let i = start - 1, arrayIndexFinder = 0, j = 0;
     j < size;
-    i += period[arrayIndexFinder % period.length], j++
+    i += period[arrayIndexFinder++ % period.length], j++
   ) {
     message[j] = modifiedFile[i];
   }
@@ -54,7 +55,7 @@ export const showSteg = (file, size, start, period, name) => {
 };
 
 // Display Files to Dash
-export const FileDisplay = (fileName, fileString) => {
+export const fileDisplay = (fileName, fileString) => {
   const nums = fileString.split(",").map((n) => parseInt(n, 10));
   const byteStream = Uint8Array.from(nums);
 
@@ -86,4 +87,11 @@ export const FileDisplay = (fileName, fileString) => {
     // If the file type is not supported, display an error message
     return <p>Unsupported file type: {fileType}</p>;
   }
+};
+
+// Download hidden file with given instructions
+export const downloadHiddenFile = (file) => {
+  const nums = file.file.split(",").map((n) => parseInt(n, 10));
+  const byteStream = Uint8Array.from(nums);
+  showSteg(byteStream, file.mSize, file.mSkip, file.mPeriod, file.mName);
 };

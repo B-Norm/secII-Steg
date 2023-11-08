@@ -6,7 +6,7 @@ import Register from "../login/Register.jsx";
 import UploadFile from "../steg/UploadFile.jsx";
 import { useIsAuthenticated, useAuthUser, useSignOut } from "react-auth-kit";
 import Images from "./Images.jsx";
-import axios from "axios";
+import { getFiles } from "../interceptors/axios.jsx";
 
 const { Header, Content, Footer } = Layout;
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -41,39 +41,15 @@ const App = () => {
   const logout = () => {
     signOut();
   };
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
-
-  const getFiles = async () => {
-    const url = "/api/getFiles";
-
-    const options = {
-      method: "GET",
-      headers: {
-        "content-type": "application/json",
-        api_key: API_KEY,
-      },
-      url: url,
-    };
-
-    const res = await axios(options)
-      .then((response) => {
-        if (response.status === 200) {
-          setFiles(response.data);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
 
   useEffect(() => {
-    getFiles();
+    getFiles().then((data) => {
+      setFiles(data);
+    });
   }, [reload]);
 
   return (
-    <Layout style={{ top: 0, bottom: 0, left: 0, right: 0 }}>
+    <Layout style={{ position: "flex", top: 0, bottom: 0, left: 0, right: 0 }}>
       <Header
         style={{
           position: "sticky",
@@ -101,7 +77,7 @@ const App = () => {
                   Logout
                 </Button>
                 <Button type="primary" padding="5px" onClick={showUpload}>
-                  upload
+                  Upload
                 </Button>
               </>
             )}
@@ -122,7 +98,11 @@ const App = () => {
             background: "#696969",
           }}
         >
-          {files.length === 0 ? <p> Loading </p> : <Images files={files} />}
+          {files.length === 0 ? (
+            <p> Loading </p>
+          ) : (
+            <Images files={files} setFiles={setFiles} />
+          )}
         </div>
       </Content>
       <Footer
