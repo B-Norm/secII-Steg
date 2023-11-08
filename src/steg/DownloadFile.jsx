@@ -92,13 +92,13 @@ const UploadFile = (props) => {
             onChange={handleInputChange}
           />
           <Button type="primary" onClick={handleButtonClick}>
-            Get Int List
+            Set Int List
           </Button>
           <div>Int List: {intList.join(", ")}</div>
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Upload
+            Download
           </Button>
         </Form.Item>
       </Form>

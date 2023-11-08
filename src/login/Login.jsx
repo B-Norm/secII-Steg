@@ -3,6 +3,7 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { useSignIn } from "react-auth-kit";
 import axios from "axios";
+import { loginUser } from "../interceptors/axios";
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 //layout from antd
@@ -16,9 +17,18 @@ const Login = (props) => {
 
   // log user in
   const onFinish = async (values) => {
-    const url = "/api/login";
     const { username, password } = values;
-    const options = {
+
+    loginUser(username, password).then((userToken) => {
+      signIn({
+        token: userToken,
+        expiresIn: 60,
+        tokenType: "Bearer",
+        authState: { username: username },
+      });
+      props.setLoginOpen(false);
+    });
+    /*     const options = {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -45,7 +55,7 @@ const Login = (props) => {
       })
       .catch((err) => {
         alert("Wrong Login Info!");
-      });
+      }); */
   };
 
   return (
@@ -89,13 +99,6 @@ const Login = (props) => {
             type="password"
             placeholder="Password"
           />
-        </Form.Item>
-        <Form.Item>
-          <Form.Item
-            name="remember"
-            valuePropName="checked"
-            noStyle
-          ></Form.Item>
         </Form.Item>
 
         <Form.Item>

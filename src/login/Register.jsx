@@ -2,37 +2,20 @@ import React from "react";
 import { Form, Input, Button, Space } from "antd";
 import axios from "axios";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { registerUser } from "../interceptors/axios";
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 // layout from antd
 const Register = (props) => {
   // register user
-  const registerUser = async (values) => {
-    const url = "/api/register";
+  const register = async (values) => {
     const { username, password } = values;
 
-    const options = {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        api_key: API_KEY,
-      },
-      data: {
-        username: username,
-        password: password,
-      },
-      url: url,
-    };
-
-    const res = await axios(options)
-      .then((response) => {
-        if (response.status === 200) {
-          props.setLoginOpen(false);
-        }
-      })
-      .catch((err) => {
-        alert("Username Taken!");
-      });
+    registerUser(username, password).then((res) => {
+      if (res) {
+        props.setRegisterOpen(false);
+      }
+    });
   };
 
   const backToLogin = () => {
@@ -48,7 +31,7 @@ const Register = (props) => {
         initialValues={{
           remember: true,
         }}
-        onFinish={registerUser}
+        onFinish={register}
       >
         <Form.Item
           name="username"

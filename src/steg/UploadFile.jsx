@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Upload, Input, InputNumber, Form } from "antd";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import { bitsToBytes, saveByteArray, toBinString } from "../bitManip/helper";
+import { uploadFile } from "../interceptors/axios";
 import axios from "axios";
 
 const UploadFile = (props) => {
@@ -48,7 +49,6 @@ const UploadFile = (props) => {
   // fileType of message, Period/ mode,
   // skip bit,
   const upload = async (values) => {
-    const url = "/api/upload";
     const { startingBit } = values;
     var period = [values.lengthB];
     if (intList) {
@@ -57,33 +57,23 @@ const UploadFile = (props) => {
 
     const stegFile = await handleSteganography(startingBit, period);
 
-    const options = {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: useAuth(),
-      },
-      data: {
-        stegName: values.plaintext.file.name,
-        file: stegFile.toString(),
-        mName: values.message.file.name,
-        mSkip: startingBit,
-        mPeriod: period,
-        mSize: mSize,
-      },
-      url: url,
-    };
-
-    const res = await axios(options)
-      .then((response) => {
-        if (response.status === 200) {
-          props.setUploadOpen(false);
+    uploadFile(
+      useAuth,
+      values.plaintext.file.name,
+      stegFile.toString(),
+      values.message.file.name,
+      startingBit,
+      period,
+      mSize
+    )
+      .then((res) => {
+        if (res) {
           props.setReload(props.reload + 1);
+          props.setUploadOpen(false);
         }
       })
       .catch((err) => {
-        alert("Upload Error");
-        console.log(err);
+        alert("Upload Failed" + err.message);
       });
   };
 
@@ -209,7 +199,7 @@ const UploadFile = (props) => {
             onChange={handleInputChange}
           />
           <Button type="primary" onClick={handleButtonClick}>
-            Get Int List
+            Set Int List
           </Button>
           <div>Int List: {intList.join(", ")}</div>
         </Form.Item>

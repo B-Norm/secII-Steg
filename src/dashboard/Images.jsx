@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { Card, Button, Row, Col, Space, Modal, Upload } from "antd";
 import { fileDisplay } from "../bitManip/helper";
 import { useAuthHeader } from "react-auth-kit";
-import { showSteg } from "../bitManip/helper";
 import { deleteFile, getFiles } from "../interceptors/axios";
-import UploadFile from "../steg/UploadFile";
 import DownloadFile from "../steg/DownloadFile";
 
 const Images = (props) => {
@@ -23,7 +21,6 @@ const Images = (props) => {
     if (result) {
       getFiles().then((data) => {
         props.setFiles(data);
-        alert("File Deleted");
       });
     } else {
       alert("File Failed to Delete");
@@ -43,13 +40,15 @@ const Images = (props) => {
             >
               <Space wrap>
                 <Button onClick={showDownload}>Download Hidden File</Button>
-                <Button
-                  type="primary"
-                  danger
-                  onClick={() => handleDelete(file._id)}
-                >
-                  Delete
-                </Button>
+                {useAuth() && (
+                  <Button
+                    type="primary"
+                    danger
+                    onClick={() => handleDelete(file._id)}
+                  >
+                    Delete
+                  </Button>
+                )}
               </Space>
               <Modal
                 title="Enter Download Comands"
