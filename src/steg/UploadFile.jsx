@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { UploadOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
 import { Button, Upload, Input, InputNumber, Form } from "antd";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import { bitsToBytes, saveByteArray, toBinString } from "../bitManip/helper";
@@ -32,7 +31,7 @@ const UploadFile = (props) => {
           for (
             let i = S - 1, arrayIndexFinder = 0, j = 0;
             j < hiddenBits.length;
-            i += C[arrayIndexFinder % C.length], j++
+            i += C[arrayIndexFinder++ % C.length], j++
           ) {
             modifiedBits[i] = hiddenBits[j];
           }
@@ -78,7 +77,6 @@ const UploadFile = (props) => {
     const res = await axios(options)
       .then((response) => {
         if (response.status === 200) {
-          console.log(response);
           props.setUploadOpen(false);
           props.setReload(props.reload + 1);
         }
@@ -121,7 +119,6 @@ const UploadFile = (props) => {
         >
           <Upload
             beforeUpload={(file) => {
-              console.log({ file });
               return false;
             }}
             onChange={(info) => setPlaintext(info.file)}
@@ -142,7 +139,6 @@ const UploadFile = (props) => {
         >
           <Upload
             beforeUpload={(file) => {
-              console.log({ file });
               return false;
             }}
             onChange={(info) => setMessage(info.file)}
@@ -204,7 +200,6 @@ const UploadFile = (props) => {
           name="choice"
           rules={[
             {
-              //required: true,
               message: "Please input your Choice!",
             },
           ]}
