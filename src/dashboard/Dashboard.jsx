@@ -49,12 +49,13 @@ const App = () => {
   }, [reload]);
 
   return (
-    <Layout style={{ position: "flex", top: 0, bottom: 0, left: 0, right: 0 }}>
+    <Layout
+      style={{ position: "absolute", bottom: 0, top: 0, right: 0, left: 0 }}
+    >
       <Header
         style={{
           position: "sticky",
           top: 0,
-          zIndex: 1,
           width: "100%",
         }}
       >
@@ -87,12 +88,14 @@ const App = () => {
       <Content
         className="site-layout"
         style={{
+          minHeight: "420",
           padding: "50px 50px",
           background: "#1f1f1f",
         }}
       >
         <div
           style={{
+            height: "100%",
             padding: 24,
             minHeight: 380,
             background: "#696969",
@@ -109,7 +112,6 @@ const App = () => {
         style={{
           textAlign: "center",
           background: "#1f1f1f",
-          bottom: 0,
           width: "100%",
         }}
       >

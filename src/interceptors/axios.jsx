@@ -92,15 +92,8 @@ export const getFiles = async () => {
   return res;
 };
 
-export const uploadFile = async (
-  auth,
-  stegName,
-  file,
-  mName,
-  mSkip,
-  mPeriod,
-  mSize
-) => {
+// API call to upload carrier file to db
+export const uploadFile = async (auth, stegName, file, mName, mSize) => {
   const url = "/api/upload";
 
   const options = {
@@ -113,8 +106,6 @@ export const uploadFile = async (
       stegName: stegName,
       file: file,
       mName: mName,
-      mSkip: mSkip,
-      mPeriod: mPeriod,
       mSize: mSize,
     },
     url: url,
@@ -131,6 +122,7 @@ export const uploadFile = async (
       return false;
     });
 };
+
 // API call to delete file from server
 export const deleteFile = async (fileId, auth) => {
   const url = "/api/deleteFile";

@@ -57,7 +57,10 @@ const Images = (props) => {
                 onCancel={handleCancelDownload}
                 footer={[]}
               >
-                <DownloadFile file={file} />
+                <DownloadFile
+                  file={file}
+                  handleCancelDownload={handleCancelDownload}
+                />
               </Modal>
             </Card>
           </Col>

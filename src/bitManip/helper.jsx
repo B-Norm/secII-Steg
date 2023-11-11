@@ -9,12 +9,9 @@ export var toBinString = (bytes) => {
 
 // converts a bit string into Bytes
 export const bitsToBytes = (bits) => {
-  //const _bits = bits.split("").map((_bits) => parseInt(_bits, 10));
-
   const bytes = new Uint8Array(Math.ceil(bits.length / 8));
   let byteIndex = 0;
   let bitIndex = 7;
-
   for (let i = 0; i < bits.length; i++) {
     if (bits[i] != 0) {
       bytes[byteIndex] |= 1 << bitIndex;
@@ -40,13 +37,13 @@ export function saveByteArray(byteArray, fileName) {
   link.click();
 }
 
-export const showSteg = (file, size, start, period, name) => {
+export const showSteg = async (file, size, start, period, name) => {
   var modifiedFile = toBinString(file);
   var message = [];
   for (
-    let i = start - 1, arrayIndexFinder = 0, j = 0;
+    let i = start - 1, j = 0;
     j < size;
-    i += period[arrayIndexFinder++ % period.length], j++
+    i += period[j % period.length], j++
   ) {
     message[j] = modifiedFile[i];
   }
@@ -90,8 +87,8 @@ export const fileDisplay = (fileName, fileString) => {
 };
 
 // Download hidden file with given instructions
-export const downloadHiddenFile = (file) => {
+export const downloadHiddenFile = async (file, mSkip, mPeriod) => {
   const nums = file.file.split(",").map((n) => parseInt(n, 10));
   const byteStream = Uint8Array.from(nums);
-  showSteg(byteStream, file.mSize, file.mSkip, file.mPeriod, file.mName);
+  await showSteg(byteStream, file.mSize, mSkip, mPeriod, file.mName);
 };

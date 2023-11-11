@@ -15,7 +15,7 @@ const UploadFile = (props) => {
 
   // put message file into the bits of the
   // plaintext file and return modified plaintext
-  const handleSteganography = (S, C) => {
+  const handleSteganography = (start, period) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       var hiddenBits = [];
@@ -30,9 +30,9 @@ const UploadFile = (props) => {
           mSize = hiddenBits.length;
           // handle the replacing of the bits to the original array
           for (
-            let i = S - 1, arrayIndexFinder = 0, j = 0;
-            j < hiddenBits.length;
-            i += C[arrayIndexFinder++ % C.length], j++
+            let i = start - 1, j = 0;
+            j < mSize;
+            i += period[j % period.length], j++
           ) {
             modifiedBits[i] = hiddenBits[j];
           }
@@ -62,8 +62,6 @@ const UploadFile = (props) => {
       values.plaintext.file.name,
       stegFile.toString(),
       values.message.file.name,
-      startingBit,
-      period,
       mSize
     )
       .then((res) => {
