@@ -5,6 +5,7 @@ import { downloadHiddenFile } from "../bitManip/helper";
 const UploadFile = (props) => {
   const [inputValue, setInputValue] = useState("");
   const [intList, setIntList] = useState([]);
+  const [load, setLoad] = useState(false);
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
@@ -16,8 +17,17 @@ const UploadFile = (props) => {
     setIntList(intArray.filter((num) => !isNaN(num)));
   };
 
-  const download = (file) => {
-    downloadHiddenFile(file);
+  const download = async (values) => {
+    var period = [values.lengthB];
+    if (intList) {
+      period = period.concat(intList);
+    }
+    setLoad(true);
+    await downloadHiddenFile(props.file, values.startingBit, period).then(
+      () => {
+        props.handleCancelDownload();
+      }
+    );
   };
 
   return (
@@ -28,7 +38,7 @@ const UploadFile = (props) => {
         initialValues={{
           remember: true,
         }}
-        onFinish={() => download(props.file)}
+        onFinish={download}
       >
         <Form.Item
           label="Starting Bit (S)"
@@ -92,13 +102,13 @@ const UploadFile = (props) => {
             onChange={handleInputChange}
           />
           <Button type="primary" onClick={handleButtonClick}>
-            Get Int List
+            Set Int List
           </Button>
           <div>Int List: {intList.join(", ")}</div>
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Upload
+          <Button type="primary" htmlType="submit" loading={load}>
+            Download
           </Button>
         </Form.Item>
       </Form>

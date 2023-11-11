@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Upload, Input, InputNumber, Form } from "antd";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import { bitsToBytes, saveByteArray, toBinString } from "../bitManip/helper";
+import { uploadFile } from "../interceptors/axios";
 import axios from "axios";
 
 const UploadFile = (props) => {
@@ -14,7 +15,7 @@ const UploadFile = (props) => {
 
   // put message file into the bits of the
   // plaintext file and return modified plaintext
-  const handleSteganography = (S, C) => {
+  const handleSteganography = (start, period) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       var hiddenBits = [];
@@ -29,9 +30,9 @@ const UploadFile = (props) => {
           mSize = hiddenBits.length;
           // handle the replacing of the bits to the original array
           for (
-            let i = S - 1, arrayIndexFinder = 0, j = 0;
-            j < hiddenBits.length;
-            i += C[arrayIndexFinder++ % C.length], j++
+            let i = start - 1, j = 0;
+            j < mSize;
+            i += period[j % period.length], j++
           ) {
             modifiedBits[i] = hiddenBits[j];
           }
@@ -48,7 +49,6 @@ const UploadFile = (props) => {
   // fileType of message, Period/ mode,
   // skip bit,
   const upload = async (values) => {
-    const url = "/api/upload";
     const { startingBit } = values;
     var period = [values.lengthB];
     if (intList) {
@@ -57,33 +57,21 @@ const UploadFile = (props) => {
 
     const stegFile = await handleSteganography(startingBit, period);
 
-    const options = {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: useAuth(),
-      },
-      data: {
-        stegName: values.plaintext.file.name,
-        file: stegFile.toString(),
-        mName: values.message.file.name,
-        mSkip: startingBit,
-        mPeriod: period,
-        mSize: mSize,
-      },
-      url: url,
-    };
-
-    const res = await axios(options)
-      .then((response) => {
-        if (response.status === 200) {
-          props.setUploadOpen(false);
+    uploadFile(
+      useAuth,
+      values.plaintext.file.name,
+      stegFile.toString(),
+      values.message.file.name,
+      mSize
+    )
+      .then((res) => {
+        if (res) {
           props.setReload(props.reload + 1);
+          props.setUploadOpen(false);
         }
       })
       .catch((err) => {
-        alert("Upload Error");
-        console.log(err);
+        alert("Upload Failed" + err.message);
       });
   };
 
@@ -209,7 +197,7 @@ const UploadFile = (props) => {
             onChange={handleInputChange}
           />
           <Button type="primary" onClick={handleButtonClick}>
-            Get Int List
+            Set Int List
           </Button>
           <div>Int List: {intList.join(", ")}</div>
         </Form.Item>
